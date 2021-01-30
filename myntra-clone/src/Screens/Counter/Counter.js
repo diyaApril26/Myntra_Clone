@@ -1,17 +1,13 @@
 import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { connect,useDispatch } from 'react-redux';
 import {
-  decrement,
-  increment,
-  incrementByAmount,
-  incrementAsync,
-  selectCount,
+  incrementAsync
 } from '../../features/counter/counterSlice';
+import {increment,decrement,increment_by,decrement_by,reset} from '../../Store/Counter/actions';
 import styles from './Counter.css';
 
-export function Counter() {
-  const count = useSelector(selectCount);
-  const dispatch = useDispatch();
+function Counter(props) {
+  const {counter,counterPlus,counterMinus,counterAddBy,decrement_by,reset} = props;
   const [incrementAmount, setIncrementAmount] = useState('2');
 
   return (
@@ -20,15 +16,15 @@ export function Counter() {
         <button
           className={styles.button}
           aria-label="Increment value"
-          onClick={() => dispatch(increment())}
+          onClick={counterPlus}
         >
           +
         </button>
-        <span className={styles.value}>{count}</span>
+        <span className={styles.value}>{counter}</span>
         <button
           className={styles.button}
           aria-label="Decrement value"
-          onClick={() => dispatch(decrement())}
+          onClick={counterMinus}
         >
           -
         </button>
@@ -42,15 +38,13 @@ export function Counter() {
         />
         <button
           className={styles.button}
-          onClick={() =>
-            dispatch(incrementByAmount(Number(incrementAmount) || 0))
-          }
+          // onClick={counterAddBy(incrementAmount)}
         >
           Add Amount
         </button>
         <button
           className={styles.asyncButton}
-          onClick={() => dispatch(incrementAsync(Number(incrementAmount) || 0))}
+          // onClick={() => dispatch(incrementAsync(Number(incrementAmount) || 0))}
         >
           Add Async
         </button>
@@ -58,3 +52,22 @@ export function Counter() {
     </div>
   );
 }
+
+const mapStateToProps = state => {
+  const { counter } = state.counter;
+  return { counter };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+     counterPlus: () => dispatch(increment()),
+     counterMinus: () => dispatch(decrement()),
+     counterAddBy: (value) => dispatch(increment_by(value)),
+     decrement_by: (value) => dispatch(decrement_by(value)),
+     reset: () => dispatch(reset())
+  };
+};
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Counter);
